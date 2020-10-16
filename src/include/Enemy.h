@@ -2,6 +2,7 @@
 #define ENEMY
 
 #include <string>
+#include <vector>
 
 #include <SFML/Graphics.hpp>
 
@@ -20,7 +21,10 @@ public:
 	void setVelocity(const float newVelocity) noexcept;
 
 	void registerSceneUpdater(SceneUpdater& sceneUpdater) override;
+	void removeSceneUpdater(SceneUpdater& SceneUpdater) override;
+
 	void registerEventHandlers(EventsHandling& eventsHandling) override;
+	void removeEventHandlers(EventsHandling& eventsHandling) override;
 
 	bool isAlive() const noexcept override;
 	void handleCollision(Character* characterCollisionedWith) override;
@@ -45,7 +49,8 @@ private:
 			this->getSprite().getSprite().move(sf::Vector2f(xMovement, yMovement));
 		};
 	}
-
+	
+	std::vector<SceneUpdater::CallbackID> m_registeredSceneUpdaterCallbacks;
 
 	float m_velocity = 100.0f; // default velocity
 	bool m_isAlive;

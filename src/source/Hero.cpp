@@ -47,11 +47,31 @@ void Hero::setHeroSpeed(float horizontalSpeed, float verticalSpeed) noexcept {
 }
 
 void Hero::registerEventHandlers(EventsHandling& eventsHandling) {
-	eventsHandling.registerEventHandler(sf::Event::EventType::KeyPressed, this->onKeyPressed());
-	eventsHandling.registerEventHandler(sf::Event::EventType::KeyReleased, this->onKeyReleased());
+	this->m_registeredEventHandlers.push_back(
+		eventsHandling.registerEventHandler(sf::Event::EventType::KeyPressed, this->onKeyPressed()));
+
+	this->m_registeredEventHandlers.push_back(
+		eventsHandling.registerEventHandler(sf::Event::EventType::KeyReleased, this->onKeyReleased()));
+}
+
+void Hero::removeEventHandlers(EventsHandling& EventsHandling) {
+	for (const auto& id : m_registeredEventHandlers) {
+		EventsHandling.removeEventHandler(id);
+	}
+	this->m_registeredEventHandlers.clear();
 }
 
 void Hero::registerSceneUpdater(SceneUpdater& sceneUpdater) {
-	sceneUpdater.registerUpdateCallback(this->onMove());
-	sceneUpdater.registerUpdateCallback(this->updateJumpState());
+	this->m_registeredSceneUpdaterCallbacks.push_back(
+		sceneUpdater.registerUpdateCallback(this->onMove()));
+
+	this->m_registeredSceneUpdaterCallbacks.push_back(
+		sceneUpdater.registerUpdateCallback(this->updateJumpState()));
+}
+
+void Hero::removeSceneUpdater(SceneUpdater& sceneUpdater) {
+	for (const auto& id : m_registeredSceneUpdaterCallbacks) {
+		sceneUpdater.removeCallback(id);
+	}
+	this->m_registeredSceneUpdaterCallbacks.clear();
 }

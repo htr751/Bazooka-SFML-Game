@@ -1,5 +1,8 @@
 #include <utility>
 #include <iostream>
+#include <numeric>
+
+#include <effolkronium/random.hpp>
 
 #include "Game.h"
 #include "TreeWorldMap.h"
@@ -17,10 +20,35 @@ const Map& Game::getMap() const noexcept { return *this->m_map; }
 const Hero& Game::getHero() const noexcept { return *this->m_hero; }
 
 void Game::addCharacter(std::unique_ptr<Character> character) {
+	this->addCharacterAndGetID(std::move(character));
+}
+
+Game::CharacterID Game::addCharacterAndGetID(std::unique_ptr<Character> character) {
+	using Random = effolkronium::random_static;
+
+	CharacterID generatedID = 0;
+	do {
+		generatedID = Random::get<CharacterID>(0, std::numeric_limits<CharacterID>::max());
+	} while (this->idToCharactersMap.find(generatedID) != this->idToCharactersMap.end());
+
 	character->registerEventHandlers(this->m_eventsHandling);
 	character->registerSceneUpdater(this->m_sceneUpdater);
 
-	this->m_characters[typeid(*character)].push_back(std::move(character));
+	this->m_characters[typeid(*character)].insert(std::make_pair(generatedID, std::move(character)));
+	this->idToCharactersMap.insert(std::make_pair(generatedID,
+		 std::ref(this->m_characters[typeid(*character)])));
+	
+	return generatedID;
+}
+
+void Game::removeCharacter(CharacterID id) {
+	auto& character = this->idToCharactersMap.at(id).get().at(id);
+
+	character->removeEventHandlers(this->m_eventsHandling);
+	character->removeSceneUpdater(this->m_sceneUpdater);
+
+	this->idToCharactersMap.at(id).get().erase(id);
+	this->idToCharactersMap.erase(id);
 }
 
 std::vector<std::pair<Character*, Character*>> Game::detectCollisions() const {
@@ -34,7 +62,7 @@ std::vector<std::pair<Character*, Character*>> Game::detectCollisions() const {
 		return collisions;
 	}
 
-	for (const auto& enemy : this->m_characters.at(enemyTypeIndex)) {
+	for (const auto& [id, enemy] : this->m_characters.at(enemyTypeIndex)) {
 		const auto heroBounds = this->m_hero->getSprite().getSprite().getGlobalBounds();
 		const auto enemyBounds = enemy->getSprite().getSprite().getGlobalBounds();
 
@@ -44,7 +72,7 @@ std::vector<std::pair<Character*, Character*>> Game::detectCollisions() const {
 
 		// check for collision between rocket and enemy only if there are rockets
 		if (map_utils::contains(this->m_characters, rocketTypeIndex)) {
-			for (const auto& rocket : this->m_characters.at(rocketTypeIndex)) {
+			for (const auto& [id, rocket] : this->m_characters.at(rocketTypeIndex)) {
 				const auto rocketBounds = rocket->getSprite().getSprite().getGlobalBounds();
 
 				if (rocketBounds.intersects(enemyBounds)) {
@@ -86,10 +114,13 @@ void Game::start() {
 		m_window.clear(sf::Color::Red);
 
 		m_window.draw(this->getMap().getMapSprite().getSprite());
-		for (const auto& [typeIndex, charactersVec] : this->m_characters) {
-			for (const auto& character : charactersVec) {
+		for (const auto& [typeIndex, characters] : this->m_characters) {
+			for (const auto& [id, character] : characters) {
 				if (character->isAlive()) {
 					m_window.draw(character->getSprite().getSprite());
+				}
+				else {
+					removeCharacter(id);
 				}
 			}
 		}

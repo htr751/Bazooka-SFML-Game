@@ -30,7 +30,15 @@ void Enemy::setVelocity(const float newVelocity) noexcept {
 }
 
 void Enemy::registerSceneUpdater(SceneUpdater& sceneUpdater) {
-	sceneUpdater.registerUpdateCallback(this->updatePosition());
+	this->m_registeredSceneUpdaterCallbacks.push_back(
+		sceneUpdater.registerUpdateCallback(this->updatePosition()));
+}
+
+void Enemy::removeSceneUpdater(SceneUpdater& SceneUpdater) {
+	for (const auto& id : this->m_registeredSceneUpdaterCallbacks) {
+		SceneUpdater.removeCallback(id);
+	}
 }
 
 void Enemy::registerEventHandlers(EventsHandling& eventsHandling) {}
+void Enemy::removeEventHandlers(EventsHandling& eventsHandling) {}

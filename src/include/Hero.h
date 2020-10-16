@@ -2,7 +2,7 @@
 #define HERO
 
 #include <string>
-#include <iostream>
+#include <vector>
 
 #include <SFML/Graphics.hpp>
 
@@ -23,7 +23,10 @@ public:
 	void setHeroSpeed(float horizontalSpeed, float verticalSpeed) noexcept;
 
 	void registerEventHandlers(EventsHandling& eventsHandling) override;
+	void removeEventHandlers(EventsHandling& EventsHandling) override;
+
 	void registerSceneUpdater(SceneUpdater& sceneUpdater) override;
+	void removeSceneUpdater(SceneUpdater& SceneUpdater) override;
 
 	bool isAlive() const noexcept override;
 	void handleCollision(Character* characterCollisionedWith) override;
@@ -152,6 +155,9 @@ private:
 
 	CharacterMovement m_movement;
 	JumpAction m_jumpAction;
+
+	std::vector<EventsHandling::CallbackID> m_registeredEventHandlers;
+	std::vector<SceneUpdater::CallbackID> m_registeredSceneUpdaterCallbacks;
 
 	float m_horizontalSpeed = 100;
 	float m_verticalSpeed = 100;

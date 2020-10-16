@@ -1,25 +1,40 @@
 #include <stdexcept>
+#include <utility>
+
+#include <effolkronium/random.hpp>
 
 #include "map_utils.h"
 #include "EventsHandling.h"
 
-void EventsHandling::registerEventHandler(sf::Event::EventType eventType, EventCallback handler) {
-	if (map_utils::contains(this->keyboard_event_handlers, eventType)) {
-		this->keyboard_event_handlers.at(eventType).push_back(handler);
+EventsHandling::CallbackID EventsHandling::registerEventHandler(sf::Event::EventType eventType, EventCallback handler) {
+	using Random = effolkronium::random_static;
+	
+	CallbackID generatedID = 0;
+	do {
+		generatedID = Random::get<CallbackID>(0, std::numeric_limits<CallbackID>::max());
+	} while (this->idToHandlersMap.find(generatedID) != this->idToHandlersMap.end());
+
+	if (map_utils::contains(this->keyboardEventHandlers, eventType)) {
+		this->keyboardEventHandlers.at(eventType).insert(std::make_pair(generatedID, handler));
 	}
 	else {
-		this->keyboard_event_handlers.insert({ eventType, std::vector<EventCallback>() });
-		this->keyboard_event_handlers.at(eventType).push_back(handler);
+		this->keyboardEventHandlers.insert({ eventType, std::unordered_map<CallbackID, EventCallback>() });
+		this->keyboardEventHandlers.at(eventType).insert(std::make_pair(generatedID, handler));
 	}
+
+	this->idToHandlersMap.insert(std::make_pair(generatedID,
+		std::ref(this->keyboardEventHandlers.at(eventType))));
+
+	return generatedID;
 }
 
 void EventsHandling::handleEvents(sf::RenderWindow& window) {
 	sf::Event event;
 	while (window.pollEvent(event)) {
 
-		if (map_utils::contains(this->keyboard_event_handlers, event.type)) {
-			const auto& eventCallbacks = this->keyboard_event_handlers.at(event.type);
-			for (const auto& callback : eventCallbacks) {
+		if (map_utils::contains(this->keyboardEventHandlers, event.type)) {
+			const auto& eventCallbacks = this->keyboardEventHandlers.at(event.type);
+			for (const auto& [id, callback] : eventCallbacks) {
 				callback(event.key);
 			}
 		}
@@ -29,3 +44,12 @@ void EventsHandling::handleEvents(sf::RenderWindow& window) {
 		}
 	}
 }
+
+void EventsHandling::removeEventHandler(CallbackID id) {
+	if (this->idToHandlersMap.find(id) == this->idToHandlersMap.end()) {
+		throw std::runtime_error("error - attempt to remove nonexisting callback");
+	}
+
+	this->idToHandlersMap.at(id).get().erase(id);
+	this->idToHandlersMap.erase(id);
+ }

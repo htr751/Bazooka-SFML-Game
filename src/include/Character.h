@@ -23,7 +23,9 @@ public:
 	Sprite& getSprite() noexcept;
 
 	virtual void registerEventHandlers(EventsHandling& eventsHandling) = 0;
+	virtual void removeEventHandlers(EventsHandling& EventsHandling) = 0;
 	virtual void registerSceneUpdater(SceneUpdater& sceneUpdater) = 0;
+	virtual void removeSceneUpdater(SceneUpdater& sceneUpdater) = 0;
 
 	virtual bool isAlive() const noexcept = 0;
 	virtual void handleCollision(Character* characterCollisionedWith) = 0;

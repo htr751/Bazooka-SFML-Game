@@ -7,6 +7,7 @@
 #include <memory>
 #include <type_traits>
 #include <utility>
+#include <functional>
 
 #include <SFML/Graphics.hpp>
 
@@ -31,11 +32,21 @@ public:
 	~Game() = default;
 
 private:
+	using CharacterID = unsigned long long;
+
+	CharacterID addCharacterAndGetID(std::unique_ptr<Character> character);
+	void removeCharacter(CharacterID id);
+
 	std::vector<std::pair<Character*, Character*>> detectCollisions() const;
 
 	std::unique_ptr<Map> m_map;
 
-	std::unordered_map<std::type_index, std::vector<std::unique_ptr<Character>>> m_characters;
+	std::unordered_map<std::type_index, 
+		std::unordered_map<CharacterID, std::unique_ptr<Character>>> m_characters;
+
+	std::unordered_map<CharacterID,
+		std::reference_wrapper<std::unordered_map<CharacterID, std::unique_ptr<Character>>>> idToCharactersMap;
+
 	Hero* m_hero;
 	sf::RenderWindow& m_window;
 

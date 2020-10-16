@@ -1,7 +1,7 @@
 #ifndef SCENE_UPDATER
 #define SCENE_UPDATER
 
-#include <vector>
+#include <unordered_map>
 #include <functional>
 
 #include <SFML/Graphics.hpp>
@@ -11,12 +11,18 @@ class SceneUpdater
 {
 public:
 	using UpdateCallback = std::function<void(const sf::Time&)>;
+	using CallbackID = unsigned long long; 
 	SceneUpdater() = default;
-	void registerUpdateCallback(UpdateCallback callback);
+	
+	//this method register callback and returns its ID for future referencing
+	CallbackID registerUpdateCallback(UpdateCallback callback);
 	void updateScene(const sf::Time& timeSinceLastFrameDraw) const;
 
+	//given callback id, this method removes the callback
+	void removeCallback(CallbackID id);
+
 private:
-	std::vector<UpdateCallback> update_callbacks;
+	std::unordered_map<CallbackID, UpdateCallback> updateCallbacks;
 };
 
 #endif

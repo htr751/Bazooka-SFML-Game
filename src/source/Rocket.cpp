@@ -7,9 +7,17 @@ Rocket::Rocket(Game& game, const std::string& textureFilePath, sf::Vector2f posi
 	:Character(game, textureFilePath, position), m_speed(rocketSpeed), m_isAlive(true) {}
 
 void Rocket::registerEventHandlers(EventsHandling& eventsHandling) {}
+void Rocket::removeEventHandlers(EventsHandling& eventsHandling) {}
 
 void Rocket::registerSceneUpdater(SceneUpdater& sceneUpdater) {
-	sceneUpdater.registerUpdateCallback(this->updateLocation());
+	this->m_registeredSceneUpdaterCallbacks.push_back(
+		sceneUpdater.registerUpdateCallback(this->updateLocation()));
+}
+
+void Rocket::removeSceneUpdater(SceneUpdater& sceneUpdater) {
+	for (const auto& id : this->m_registeredSceneUpdaterCallbacks) {
+		sceneUpdater.removeCallback(id);
+	}
 }
 
 bool Rocket::isAlive() const noexcept {
