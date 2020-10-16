@@ -34,9 +34,11 @@ Game::CharacterID Game::addCharacterAndGetID(std::unique_ptr<Character> characte
 	character->registerEventHandlers(this->m_eventsHandling);
 	character->registerSceneUpdater(this->m_sceneUpdater);
 
-	this->m_characters[typeid(*character)].insert(std::make_pair(generatedID, std::move(character)));
+	std::type_index characterTypeIndex = typeid(*character);
+
+	this->m_characters[characterTypeIndex].insert(std::make_pair(generatedID, std::move(character)));
 	this->idToCharactersMap.insert(std::make_pair(generatedID,
-		 std::ref(this->m_characters[typeid(*character)])));
+		 std::ref(this->m_characters[characterTypeIndex])));
 	
 	return generatedID;
 }
@@ -105,28 +107,31 @@ void Game::start() {
 			m_window.close();
 			break;
 		}
-
 		m_eventsHandling.handleEvents(m_window);
 
 		sf::Time timeSinceLastFrameDraw = time.restart();
 		m_sceneUpdater.updateScene(timeSinceLastFrameDraw);
 
 		m_window.clear(sf::Color::Red);
-
 		m_window.draw(this->getMap().getMapSprite().getSprite());
+
+		std::vector<CharacterID> charactersToRemove;
 		for (const auto& [typeIndex, characters] : this->m_characters) {
 			for (const auto& [id, character] : characters) {
 				if (character->isAlive()) {
 					m_window.draw(character->getSprite().getSprite());
 				}
 				else {
-					removeCharacter(id);
+					charactersToRemove.push_back(id);
 				}
 			}
 		}
 
-		m_window.display();
+		for (const auto& id : charactersToRemove) {
+			removeCharacter(id);
+		}
 
+		m_window.display();
 		const auto& charactersCollisions = this->detectCollisions();
 		for (const auto& [firstCharacter, secondCharacter] : charactersCollisions) {
 			firstCharacter->handleCollision(secondCharacter);
