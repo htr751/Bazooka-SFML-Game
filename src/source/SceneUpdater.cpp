@@ -31,3 +31,7 @@ void SceneUpdater::removeCallback(CallbackID id) {
 
 	this->updateCallbacks.erase(id);
 }
+
+void SceneUpdater::removeAllUpdateCallbacks() {
+	this->updateCallbacks.clear();
+}

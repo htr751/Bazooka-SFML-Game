@@ -21,6 +21,8 @@ public:
 	//given callback id, this method removes the callback
 	void removeCallback(CallbackID id);
 
+	void removeAllUpdateCallbacks();
+
 private:
 	std::unordered_map<CallbackID, UpdateCallback> updateCallbacks;
 };

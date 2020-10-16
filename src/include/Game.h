@@ -20,11 +20,13 @@ class Hero;
 class Game final
 {
 public:
+	enum class GameOverStatus { RestartGame, CloseGame };
+
 	Game(sf::RenderWindow& window) noexcept;
 	DEFAULT_MOVE_OPERATIONS(Game);
 	DISALLOW_COPY_OPERATIONS(Game);
 
-	void start();
+	GameOverStatus start();
 	const Map& getMap() const noexcept;
 	const Hero& getHero() const noexcept;
 	void addCharacter(std::unique_ptr<Character> character);
@@ -36,6 +38,9 @@ private:
 
 	CharacterID addCharacterAndGetID(std::unique_ptr<Character> character);
 	void removeCharacter(CharacterID id);
+
+	void addScore() noexcept;
+	GameOverStatus gameOver();
 
 	std::vector<std::pair<Character*, Character*>> detectCollisions() const;
 
@@ -52,6 +57,8 @@ private:
 
 	EventsHandling m_eventsHandling;
 	SceneUpdater m_sceneUpdater;
+
+	unsigned int m_score;
 };
 
 #endif

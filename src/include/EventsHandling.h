@@ -22,6 +22,7 @@ public:
 	void handleEvents(sf::RenderWindow& window);
 
 	void removeEventHandler(CallbackID id);
+	void removeAllEventHandlers();
 
 private:
 	std::unordered_map<sf::Event::EventType, 

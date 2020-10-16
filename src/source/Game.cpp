@@ -45,12 +45,19 @@ Game::CharacterID Game::addCharacterAndGetID(std::unique_ptr<Character> characte
 
 void Game::removeCharacter(CharacterID id) {
 	auto& character = this->idToCharactersMap.at(id).get().at(id);
+	if (dynamic_cast<Enemy*>(character.get())) { //if we removed an enemy, count it to the score calculation
+		addScore();
+	}
 
 	character->removeEventHandlers(this->m_eventsHandling);
 	character->removeSceneUpdater(this->m_sceneUpdater);
 
 	this->idToCharactersMap.at(id).get().erase(id);
 	this->idToCharactersMap.erase(id);
+}
+
+void Game::addScore() noexcept {
+	this->m_score++;
 }
 
 std::vector<std::pair<Character*, Character*>> Game::detectCollisions() const {
@@ -87,8 +94,7 @@ std::vector<std::pair<Character*, Character*>> Game::detectCollisions() const {
 	return collisions;
 }
 
-void Game::start() {
-
+Game::GameOverStatus Game::start() {
 	const auto& viewSize = m_window.getView().getSize();
 	this->m_map = std::make_unique<TreeWorldMap>(viewSize);
 
@@ -103,9 +109,7 @@ void Game::start() {
 
 	while (m_window.isOpen()) {
 		if (!this->m_hero->isAlive()) {
-			std::cout << "thanks for playing";
-			m_window.close();
-			break;
+			return this->gameOver();
 		}
 		m_eventsHandling.handleEvents(m_window);
 
@@ -138,4 +142,41 @@ void Game::start() {
 			secondCharacter->handleCollision(firstCharacter);
 		}
 	}
+	return Game::GameOverStatus::CloseGame;
+}
+
+Game::GameOverStatus Game::gameOver() {
+	const auto resetGame = [this](){
+		this->m_characters.clear();
+		this->idToCharactersMap.clear();
+		this->m_hero = nullptr;
+		this->m_sceneUpdater.removeAllUpdateCallbacks();
+		this->m_eventsHandling.removeAllEventHandlers();
+	};
+
+	resetGame();
+
+	this->m_window.clear(sf::Color::Red);
+	this->m_window.draw(this->getMap().getMapSprite().getSprite());
+
+	bool restartGame = false;
+
+	this->m_eventsHandling.registerEventHandler(sf::Event::EventType::KeyPressed, 
+		[&restartGame](sf::Event::KeyEvent event) mutable {
+			if (event.code == sf::Keyboard::Enter) {
+				restartGame = true;
+			}
+		}
+	);
+
+	while (!restartGame && this->m_window.isOpen()) {
+		this->m_eventsHandling.handleEvents(this->m_window);
+	}
+
+	if (!restartGame) {
+		return Game::GameOverStatus::CloseGame;
+	}
+
+	resetGame();
+	return Game::GameOverStatus::RestartGame;
 }

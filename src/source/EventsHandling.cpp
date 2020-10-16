@@ -53,3 +53,8 @@ void EventsHandling::removeEventHandler(CallbackID id) {
 	this->idToHandlersMap.at(id).get().erase(id);
 	this->idToHandlersMap.erase(id);
  }
+
+ void EventsHandling::removeAllEventHandlers() {
+	 this->keyboardEventHandlers.clear();
+	 this->idToHandlersMap.clear();
+ }

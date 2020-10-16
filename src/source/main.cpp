@@ -9,6 +9,6 @@ int main()
 	sf::RenderWindow window(viewMode, "First SFML game", sf::Style::Default);
 	
 	Game game{ window };
-	game.start();
+	while (game.start() == Game::GameOverStatus::RestartGame);
 	return 0;
 }
