@@ -158,6 +158,7 @@ Game::GameOverStatus Game::gameOver() {
 
 	this->m_window.clear(sf::Color::Red);
 	this->m_window.draw(this->getMap().getMapSprite().getSprite());
+	this->m_window.display();
 
 	bool restartGame = false;
 
@@ -178,5 +179,6 @@ Game::GameOverStatus Game::gameOver() {
 	}
 
 	resetGame();
+	this->m_map.reset();
 	return Game::GameOverStatus::RestartGame;
 }
