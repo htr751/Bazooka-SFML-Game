@@ -124,8 +124,10 @@ private:
 				break;
 			case sf::Keyboard::Space:
 				this->startJumpAction(-100.0f);
+				break;
 			case sf::Keyboard::Z:
 				this->shootRocket();;
+				break;
 			default:
 				break;
 			}
