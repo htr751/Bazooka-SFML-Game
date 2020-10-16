@@ -25,7 +25,15 @@ private:
 
 	decltype(auto) updateLocation() noexcept {
 		return [this](const sf::Time& timeSinceLastFrameDraw) {
-			this->getSprite().getSprite().move(sf::Vector2f(timeSinceLastFrameDraw.asSeconds() * this->m_speed, 0));
+			auto xMovement = timeSinceLastFrameDraw.asSeconds() * this->m_speed;
+			const auto& currentPosition = this->getSprite().getSprite().getPosition();
+
+			if (currentPosition.x + xMovement > this->m_game.getMap().RightLimitForMovement()) {
+				xMovement = this->m_game.getMap().RightLimitForMovement() - currentPosition.x;
+				this->m_isAlive = false;
+			}
+
+			this->getSprite().getSprite().move(sf::Vector2f(xMovement, 0));
 		};
 	}
 
