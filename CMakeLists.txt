@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.11)
 set(CMAKE_CXX_STANDARD 17)
 project(SimpleSfmlGame CXX)
 
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_LIST_DIR}/bin)
+
 set(INCLUDE_SRC ${CMAKE_CURRENT_LIST_DIR} "src/include")
 set(INCLUDE_DIRECTORIES ${INCLUDE_SRC})
 
