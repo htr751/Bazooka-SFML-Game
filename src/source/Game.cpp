@@ -16,7 +16,9 @@
 #include "map_utils.h"
 
 Game::Game(sf::RenderWindow& window) noexcept : m_window(window),
- m_shootSound(shootSoundFilePath), m_hitSound(hitSoundFilePath) {}
+ m_shootSound(shootSoundFilePath), m_hitSound(hitSoundFilePath) {
+	 this->m_backgroundMusic.openFromFile(bgMusicFilePath);
+ }
 
 const Map& Game::getMap() const noexcept { return *this->m_map; }
 const Hero& Game::getHero() const noexcept { return *this->m_hero; }
@@ -116,10 +118,8 @@ WindowText Game::getGameScoreText() const {
 				sf::Vector2f(viewSize.x * 0.5f, viewSize.y * 0.3), 70);
 }
 
-void Game::playBackgroundMusic(const std::string& musicFilePath) const {
-	sf::Music backgroundMusic;
-	backgroundMusic.openFromFile(musicFilePath);
-	backgroundMusic.play();
+void Game::playBackgroundMusic(const std::string& musicFilePath) {
+	m_backgroundMusic.play();
 }
 
 void Game::playRocketShootSound() {
@@ -140,6 +140,8 @@ Game::GameOverStatus Game::start() {
 	m_hero = hero.get();
 	this->addCharacter(std::move(hero));
 	this->addCharacter(std::move(enemy));
+
+	this->playBackgroundMusic(bgMusicFilePath);
 
 	sf::Clock time;
 

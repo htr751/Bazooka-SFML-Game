@@ -51,7 +51,7 @@ private:
 	WindowText getGameInstructionsText() const;
 	WindowText getGameScoreText() const;
 
-	void playBackgroundMusic(const std::string& musicFilePath) const;
+	void playBackgroundMusic(const std::string& musicFilePath);
 
 	std::vector<std::pair<Character*, Character*>> detectCollisions() const;
 
@@ -71,8 +71,8 @@ private:
 
 	Sound m_shootSound;
 	Sound m_hitSound;
+	sf::Music m_backgroundMusic;
 
-	unsigned int m_score;
 	unsigned int m_score = 0;
 };
 
