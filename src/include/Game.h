@@ -28,7 +28,7 @@ public:
 	DEFAULT_MOVE_OPERATIONS(Game);
 	DISALLOW_COPY_OPERATIONS(Game);
 
-	GameOverStatus start();
+	GameOverStatus start(unsigned int amountOfSecondsBetweenAddingEnemies);
 	const Map& getMap() const noexcept;
 	const Hero& getHero() const noexcept;
 	void addCharacter(std::unique_ptr<Character> character);

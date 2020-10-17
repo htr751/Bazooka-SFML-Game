@@ -130,20 +130,21 @@ void Game::playRocketHitEnemySound() {
 	this->m_hitSound.playSound();
 }
 
-Game::GameOverStatus Game::start() {
+Game::GameOverStatus Game::start(unsigned int amountOfSecondsBetweenAddingEnemies) {
+	using Random = effolkronium::random_static;
+
 	const auto& viewSize = m_window.getView().getSize();
 	this->m_map = std::make_unique<TreeWorldMap>(viewSize);
 
 	auto hero = std::make_unique<Hero>(*this, heroFilePath, sf::Vector2f(viewSize.x * 0.25f, viewSize.y * 0.65f));
-	auto enemy = std::make_unique<Enemy>(*this, enemyFilePath, sf::Vector2f(viewSize.x * 0.75f, viewSize.y * 0.65f));
 
 	m_hero = hero.get();
 	this->addCharacter(std::move(hero));
-	this->addCharacter(std::move(enemy));
 
 	this->playBackgroundMusic(bgMusicFilePath);
 
 	sf::Clock time;
+	auto secondsSinceLastEnemyAdd = amountOfSecondsBetweenAddingEnemies;
 
 	while (m_window.isOpen()) {
 		if (!this->m_hero->isAlive()) {
@@ -152,7 +153,17 @@ Game::GameOverStatus Game::start() {
 		m_eventsHandling.handleEvents(m_window);
 
 		sf::Time timeSinceLastFrameDraw = time.restart();
+		secondsSinceLastEnemyAdd += timeSinceLastFrameDraw.asSeconds();
+
 		m_sceneUpdater.updateScene(timeSinceLastFrameDraw);
+
+		if(secondsSinceLastEnemyAdd >= amountOfSecondsBetweenAddingEnemies) {
+			auto xScalePosition = Random::get<float>(0.7f, 0.9f);
+			auto yScalePosition = Random::get<float>(0.65f, 0.9f);
+			auto newEnemy = std::make_unique<Enemy>(*this, 
+				enemyFilePath, sf::Vector2f(viewSize.x * xScalePosition, viewSize.y * yScalePosition));
+			this->addCharacter(std::move(newEnemy));
+		}
 
 		m_window.clear(sf::Color(0xAD, 0xD8, 0xE6));
 		m_window.draw(this->getMap().getMapSprite().getSprite());
