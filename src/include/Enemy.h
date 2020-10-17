@@ -19,6 +19,7 @@ public:
 	DISALLOW_COPY_OPERATIONS(Enemy);
 
 	void setVelocity(const float newVelocity) noexcept;
+	float getVelocity() const noexcept;
 
 	void registerSceneUpdater(SceneUpdater& sceneUpdater) override;
 	void removeSceneUpdater(SceneUpdater& SceneUpdater) override;

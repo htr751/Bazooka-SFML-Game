@@ -29,6 +29,10 @@ void Enemy::setVelocity(const float newVelocity) noexcept {
 	this->m_velocity = newVelocity;
 }
 
+float Enemy::getVelocity() const noexcept {
+	return this->m_velocity;
+}
+
 void Enemy::registerSceneUpdater(SceneUpdater& sceneUpdater) {
 	this->m_registeredSceneUpdaterCallbacks.push_back(
 		sceneUpdater.registerUpdateCallback(this->updatePosition()));

@@ -1,5 +1,4 @@
 #include <utility>
-#include <iostream>
 #include <numeric>
 
 #include <effolkronium/random.hpp>
@@ -130,7 +129,7 @@ void Game::playRocketHitEnemySound() {
 	this->m_hitSound.playSound();
 }
 
-Game::GameOverStatus Game::start(unsigned int amountOfSecondsBetweenAddingEnemies) {
+Game::GameOverStatus Game::start(float amountOfSecondsBetweenAddingEnemies) {
 	using Random = effolkronium::random_static;
 
 	const auto& viewSize = m_window.getView().getSize();
@@ -144,7 +143,7 @@ Game::GameOverStatus Game::start(unsigned int amountOfSecondsBetweenAddingEnemie
 	this->playBackgroundMusic(bgMusicFilePath);
 
 	sf::Clock time;
-	auto secondsSinceLastEnemyAdd = amountOfSecondsBetweenAddingEnemies;
+	float secondsSinceLastEnemyAdd = amountOfSecondsBetweenAddingEnemies;
 
 	while (m_window.isOpen()) {
 		if (!this->m_hero->isAlive()) {
@@ -162,7 +161,9 @@ Game::GameOverStatus Game::start(unsigned int amountOfSecondsBetweenAddingEnemie
 			auto yScalePosition = Random::get<float>(0.65f, 0.9f);
 			auto newEnemy = std::make_unique<Enemy>(*this, 
 				enemyFilePath, sf::Vector2f(viewSize.x * xScalePosition, viewSize.y * yScalePosition));
+			newEnemy->setVelocity(newEnemy->getVelocity() + m_score * 20.0f);
 			this->addCharacter(std::move(newEnemy));
+			secondsSinceLastEnemyAdd = 0;
 		}
 
 		m_window.clear(sf::Color(0xAD, 0xD8, 0xE6));
