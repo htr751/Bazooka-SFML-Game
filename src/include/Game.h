@@ -15,6 +15,7 @@
 #include "Map.h"
 #include "Character.h"
 #include "Sound.h"
+#include "WindowText.h"
 
 class Hero;
 
@@ -46,9 +47,9 @@ private:
 	void addScore() noexcept;
 	GameOverStatus gameOver();
 
-	sf::Text getGameHeadingText() const;
-	sf::Text getGameInstructionsText() const;
-	sf::Text getGameScoreText() const;
+	WindowText getGameHeadingText() const;
+	WindowText getGameInstructionsText() const;
+	WindowText getGameScoreText() const;
 
 	void playBackgroundMusic(const std::string& musicFilePath) const;
 
@@ -72,6 +73,7 @@ private:
 	Sound m_hitSound;
 
 	unsigned int m_score;
+	unsigned int m_score = 0;
 };
 
 #endif
