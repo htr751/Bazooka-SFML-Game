@@ -13,7 +13,6 @@
 #include "Hero.h"
 #include "Rocket.h"
 #include "map_utils.h"
-#include "WindowText.h"
 
 Game::Game(sf::RenderWindow& window) noexcept : m_window(window) {}
 
@@ -95,24 +94,24 @@ std::vector<std::pair<Character*, Character*>> Game::detectCollisions() const {
 	return collisions;
 }
 
-sf::Text Game::getGameHeadingText() const {
+WindowText Game::getGameHeadingText() const {
 	const auto& viewSize = m_window.getView().getSize();
-	return  WindowText::createTextObj(snackerComicFontFilePath, "Bazooka", 
-				sf::Vector2f(viewSize.x * 0.5f, viewSize.y * 0.1f));
+	return  WindowText(snackerComicFontFilePath, "Bazooka", 
+				sf::Vector2f(viewSize.x * 0.5f, viewSize.y * 0.1f), 80);
 }
 
-sf::Text Game::getGameInstructionsText() const {
+WindowText Game::getGameInstructionsText() const {
 	const auto& viewSize = m_window.getView().getSize();
-	return WindowText::createTextObj(snackerComicFontFilePath, 
-				"Move using thw arrows, jump with space and shoot on enemy with pressing Z", 
-				sf::Vector2f(viewSize.x * 0.1f, viewSize.y * 0.15f));
+	return WindowText(snackerComicFontFilePath, 
+				"Move using the arrows, jump with space and shoot on enemy with pressing Z", 
+				sf::Vector2f(viewSize.x * 0.5f, viewSize.y * 0.2f), 30);
 }
 
-sf::Text Game::getGameScoreText() const {
+WindowText Game::getGameScoreText() const {
 	const auto& viewSize = m_window.getView().getSize();
-	return WindowText::createTextObj(arialFontFilePath, 
-				"score: " + std::to_string(this->m_score), 
-				sf::Vector2f(viewSize.x * 0.5f, viewSize.y * 0.2));
+	return WindowText(arialFontFilePath, 
+				"Score: " + std::to_string(this->m_score), 
+				sf::Vector2f(viewSize.x * 0.5f, viewSize.y * 0.3), 70);
 }
 
 Game::GameOverStatus Game::start() {
@@ -137,12 +136,12 @@ Game::GameOverStatus Game::start() {
 		sf::Time timeSinceLastFrameDraw = time.restart();
 		m_sceneUpdater.updateScene(timeSinceLastFrameDraw);
 
-		m_window.clear(sf::Color::Red);
+		m_window.clear(sf::Color(0xAD, 0xD8, 0xE6));
 		m_window.draw(this->getMap().getMapSprite().getSprite());
 
-		m_window.draw(getGameHeadingText());
-		m_window.draw(getGameInstructionsText());
-		m_window.draw(getGameScoreText());
+		m_window.draw(getGameHeadingText().getText());
+		m_window.draw(getGameInstructionsText().getText());
+		m_window.draw(getGameScoreText().getText());
 
 		std::vector<CharacterID> charactersToRemove;
 		for (const auto& [typeIndex, characters] : this->m_characters) {
@@ -181,12 +180,12 @@ Game::GameOverStatus Game::gameOver() {
 
 	resetGame();
 
-	this->m_window.clear(sf::Color::Red);
+	this->m_window.clear(sf::Color(0xAD, 0xD8, 0xE6));
 	this->m_window.draw(this->getMap().getMapSprite().getSprite());
 
-	this->m_window.draw(getGameInstructionsText());
-	this->m_window.draw(getGameHeadingText());
-	this->m_window.draw(getGameScoreText());
+	this->m_window.draw(getGameInstructionsText().getText());
+	this->m_window.draw(getGameHeadingText().getText());
+	this->m_window.draw(getGameScoreText().getText());
 
 	this->m_window.display();
 

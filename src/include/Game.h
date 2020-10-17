@@ -14,6 +14,7 @@
 #include "class_utils.hpp"
 #include "Map.h"
 #include "Character.h"
+#include "WindowText.h"
 
 class Hero;
 
@@ -42,9 +43,9 @@ private:
 	void addScore() noexcept;
 	GameOverStatus gameOver();
 
-	sf::Text getGameHeadingText() const;
-	sf::Text getGameInstructionsText() const;
-	sf::Text getGameScoreText() const;
+	WindowText getGameHeadingText() const;
+	WindowText getGameInstructionsText() const;
+	WindowText getGameScoreText() const;
 
 	std::vector<std::pair<Character*, Character*>> detectCollisions() const;
 
@@ -62,7 +63,7 @@ private:
 	EventsHandling m_eventsHandling;
 	SceneUpdater m_sceneUpdater;
 
-	unsigned int m_score;
+	unsigned int m_score = 0;
 };
 
 #endif
