@@ -13,6 +13,7 @@
 #include "Hero.h"
 #include "Rocket.h"
 #include "map_utils.h"
+#include "WindowText.h"
 
 Game::Game(sf::RenderWindow& window) noexcept : m_window(window) {}
 
@@ -94,6 +95,26 @@ std::vector<std::pair<Character*, Character*>> Game::detectCollisions() const {
 	return collisions;
 }
 
+sf::Text Game::getGameHeadingText() const {
+	const auto& viewSize = m_window.getView().getSize();
+	return  WindowText::createTextObj(snackerComicFontFilePath, "Bazooka", 
+				sf::Vector2f(viewSize.x * 0.5f, viewSize.y * 0.1f));
+}
+
+sf::Text Game::getGameInstructionsText() const {
+	const auto& viewSize = m_window.getView().getSize();
+	return WindowText::createTextObj(snackerComicFontFilePath, 
+				"Move using thw arrows, jump with space and shoot on enemy with pressing Z", 
+				sf::Vector2f(viewSize.x * 0.1f, viewSize.y * 0.15f));
+}
+
+sf::Text Game::getGameScoreText() const {
+	const auto& viewSize = m_window.getView().getSize();
+	return WindowText::createTextObj(arialFontFilePath, 
+				"score: " + std::to_string(this->m_score), 
+				sf::Vector2f(viewSize.x * 0.5f, viewSize.y * 0.2));
+}
+
 Game::GameOverStatus Game::start() {
 	const auto& viewSize = m_window.getView().getSize();
 	this->m_map = std::make_unique<TreeWorldMap>(viewSize);
@@ -118,6 +139,10 @@ Game::GameOverStatus Game::start() {
 
 		m_window.clear(sf::Color::Red);
 		m_window.draw(this->getMap().getMapSprite().getSprite());
+
+		m_window.draw(getGameHeadingText());
+		m_window.draw(getGameInstructionsText());
+		m_window.draw(getGameScoreText());
 
 		std::vector<CharacterID> charactersToRemove;
 		for (const auto& [typeIndex, characters] : this->m_characters) {
@@ -158,6 +183,11 @@ Game::GameOverStatus Game::gameOver() {
 
 	this->m_window.clear(sf::Color::Red);
 	this->m_window.draw(this->getMap().getMapSprite().getSprite());
+
+	this->m_window.draw(getGameInstructionsText());
+	this->m_window.draw(getGameHeadingText());
+	this->m_window.draw(getGameScoreText());
+
 	this->m_window.display();
 
 	bool restartGame = false;
@@ -180,5 +210,7 @@ Game::GameOverStatus Game::gameOver() {
 
 	resetGame();
 	this->m_map.reset();
+	this->m_score = 0;
+	
 	return Game::GameOverStatus::RestartGame;
 }

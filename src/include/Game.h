@@ -42,6 +42,10 @@ private:
 	void addScore() noexcept;
 	GameOverStatus gameOver();
 
+	sf::Text getGameHeadingText() const;
+	sf::Text getGameInstructionsText() const;
+	sf::Text getGameScoreText() const;
+
 	std::vector<std::pair<Character*, Character*>> detectCollisions() const;
 
 	std::unique_ptr<Map> m_map;
