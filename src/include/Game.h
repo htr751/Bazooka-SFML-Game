@@ -14,6 +14,7 @@
 #include "class_utils.hpp"
 #include "Map.h"
 #include "Character.h"
+#include "Sound.h"
 
 class Hero;
 
@@ -31,6 +32,9 @@ public:
 	const Hero& getHero() const noexcept;
 	void addCharacter(std::unique_ptr<Character> character);
 
+	void playRocketShootSound();
+	void playRocketHitEnemySound();
+
 	~Game() = default;
 
 private:
@@ -45,6 +49,8 @@ private:
 	sf::Text getGameHeadingText() const;
 	sf::Text getGameInstructionsText() const;
 	sf::Text getGameScoreText() const;
+
+	void playBackgroundMusic(const std::string& musicFilePath) const;
 
 	std::vector<std::pair<Character*, Character*>> detectCollisions() const;
 
@@ -61,6 +67,9 @@ private:
 
 	EventsHandling m_eventsHandling;
 	SceneUpdater m_sceneUpdater;
+
+	Sound m_shootSound;
+	Sound m_hitSound;
 
 	unsigned int m_score;
 };

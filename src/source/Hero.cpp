@@ -26,6 +26,7 @@ void Hero::shootRocket() {
 		sf::Vector2f(currentPosition.x + 10, currentPosition.y), 400.0f);
 
 	this->m_game.addCharacter(std::move(rocket));
+	this->m_game.playRocketShootSound();
 }
 
 bool Hero::isAlive() const noexcept {

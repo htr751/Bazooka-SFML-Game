@@ -12,7 +12,7 @@ set(SOURCES "${SOURCE_DIR}/Character.cpp" "${SOURCE_DIR}/CharacterMovement.cpp" 
     "${SOURCE_DIR}/EventsHandling.cpp" "${SOURCE_DIR}/Game.cpp" "${SOURCE_DIR}/Hero.cpp" 
     "${SOURCE_DIR}/JumpAction.cpp" "${SOURCE_DIR}/main.cpp" "${SOURCE_DIR}/Rocket.cpp"
     "${SOURCE_DIR}/SceneUpdater.cpp" "${SOURCE_DIR}/Sprite.cpp" "${SOURCE_DIR}/TreeWorldMap.cpp"
-    "${SOURCE_DIR}/WindowText.cpp")
+    "${SOURCE_DIR}/WindowText.cpp" "${SOURCE_DIR}/Sound.cpp")
 
 add_executable(SimpleSfmlGame ${SOURCES} ${INCLUDE_DIRECTORIES})
 

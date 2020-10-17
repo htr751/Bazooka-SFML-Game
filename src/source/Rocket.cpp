@@ -32,4 +32,5 @@ void Rocket::handleCollision(Character* characterCollisionedWith) {
 	}
 
 	this->m_isAlive = false;
+	this->m_game.playRocketHitEnemySound();
 }

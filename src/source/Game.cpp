@@ -3,6 +3,7 @@
 #include <numeric>
 
 #include <effolkronium/random.hpp>
+#include <SFML/Audio.hpp>
 
 #include "Game.h"
 #include "TreeWorldMap.h"
@@ -15,7 +16,8 @@
 #include "map_utils.h"
 #include "WindowText.h"
 
-Game::Game(sf::RenderWindow& window) noexcept : m_window(window) {}
+Game::Game(sf::RenderWindow& window) noexcept : m_window(window),
+ m_shootSound(shootSoundFilePath), m_hitSound(hitSoundFilePath) {}
 
 const Map& Game::getMap() const noexcept { return *this->m_map; }
 const Hero& Game::getHero() const noexcept { return *this->m_hero; }
@@ -115,6 +117,20 @@ sf::Text Game::getGameScoreText() const {
 				sf::Vector2f(viewSize.x * 0.5f, viewSize.y * 0.2));
 }
 
+void Game::playBackgroundMusic(const std::string& musicFilePath) const {
+	sf::Music backgroundMusic;
+	backgroundMusic.openFromFile(musicFilePath);
+	backgroundMusic.play();
+}
+
+void Game::playRocketShootSound() {
+	this->m_shootSound.playSound();
+}
+
+void Game::playRocketHitEnemySound() {
+	this->m_hitSound.playSound();
+}
+
 Game::GameOverStatus Game::start() {
 	const auto& viewSize = m_window.getView().getSize();
 	this->m_map = std::make_unique<TreeWorldMap>(viewSize);
@@ -211,6 +227,6 @@ Game::GameOverStatus Game::gameOver() {
 	resetGame();
 	this->m_map.reset();
 	this->m_score = 0;
-	
+
 	return Game::GameOverStatus::RestartGame;
 }

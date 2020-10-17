@@ -11,7 +11,7 @@ inline const char* snackerComicFontFilePath = "../Assets/fonts/SnackerComic.ttf"
 inline const char* waltographUIFilePath = "../Assets/fonts/waltographUI.ttf";
 
 inline const char* bgMusicFilePath = "../Assets/audio/bgMusic.ogg";
-inline const char* fireMusicFilePath = "../Assets/audio/fire.ogg";
-inline const char* hitMusicFilePath = "../Assets/audio/hit.ogg";
+inline const char* shootSoundFilePath = "../Assets/audio/fire.ogg";
+inline const char* hitSoundFilePath = "../Assets/audio/hit.ogg";
 
 #endif
